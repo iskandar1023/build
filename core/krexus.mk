@@ -159,7 +159,8 @@ LOCAL_DISABLE_KRAIT := \
 
 KRAIT_FLAGS := \
 	-mcpu=cortex-a15 \
-	-mtune=cortex-a15
+	-mtune=cortex-a15 \
+	-mvectorize-with-neon-quad
 
 #############
 # GCC Tunings
