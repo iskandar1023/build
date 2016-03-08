@@ -188,6 +188,12 @@ endif
 # Include DragonTC Optimizations
 ifneq ($(DISABLE_DTC_OPTS),true)
   include $(BUILD_SYSTEM)/dragontc.mk
+
+# Export compiler type for display
+ifeq ($(my_clang),)
+    my_compiler := gcc
+else
+    my_compiler := clang
 endif
 
 # arch-specific static libraries go first so that generic ones can depend on them
@@ -556,6 +562,7 @@ endif  # transform-proto-to-cc rule included only once
 
 $(proto_generated_objects): PRIVATE_ARM_MODE := $(normal_objects_mode)
 $(proto_generated_objects): PRIVATE_ARM_CFLAGS := $(normal_objects_cflags)
+$(proto_generated_objects): PRIVATE_COMPILER_ID := $(my_compiler)
 $(proto_generated_objects): $(proto_generated_obj_dir)/%.o: $(proto_generated_sources_dir)/%$(my_proto_source_suffix) $(proto_generated_headers)
 ifeq ($(my_proto_source_suffix),.c)
 	$(transform-$(PRIVATE_HOST)c-to-o)
@@ -622,6 +629,7 @@ endif
 ifneq ($(strip $(yacc_cpps)),)
 $(yacc_objects): PRIVATE_ARM_MODE := $(normal_objects_mode)
 $(yacc_objects): PRIVATE_ARM_CFLAGS := $(normal_objects_cflags)
+$(yacc_objects): PRIVATE_COMPILER_ID := $(my_compiler)
 $(yacc_objects): $(intermediates)/%.o: $(intermediates)/%$(LOCAL_CPP_EXTENSION)
 	$(transform-$(PRIVATE_HOST)cpp-to-o)
 endif
@@ -656,6 +664,7 @@ endif
 ifneq ($(strip $(lex_cpps)),)
 $(lex_objects): PRIVATE_ARM_MODE := $(normal_objects_mode)
 $(lex_objects): PRIVATE_ARM_CFLAGS := $(normal_objects_cflags)
+$(lex_objects): PRIVATE_COMPILER_ID := $(my_compiler)
 $(lex_objects): $(intermediates)/%.o: \
     $(intermediates)/%$(LOCAL_CPP_EXTENSION) \
     $(my_additional_dependencies) \
@@ -694,8 +703,10 @@ cpp_normal_objects := $(addprefix $(intermediates)/,$(cpp_normal_sources:$(LOCAL
 
 $(dotdot_arm_objects) $(cpp_arm_objects): PRIVATE_ARM_MODE := $(arm_objects_mode)
 $(dotdot_arm_objects) $(cpp_arm_objects): PRIVATE_ARM_CFLAGS := $(arm_objects_cflags)
+$(dotdot_arm_objects) $(cpp_arm_objects): PRIVATE_COMPILER_ID := $(my_compiler)
 $(dotdot_objects) $(cpp_normal_objects): PRIVATE_ARM_MODE := $(normal_objects_mode)
 $(dotdot_objects) $(cpp_normal_objects): PRIVATE_ARM_CFLAGS := $(normal_objects_cflags)
+$(dotdot_objects) $(cpp_normal_objects): PRIVATE_COMPILER_ID := $(my_compiler)
 
 cpp_objects        := $(cpp_arm_objects) $(cpp_normal_objects)
 
@@ -722,6 +733,7 @@ ifneq ($(strip $(gen_cpp_objects)),)
 # TODO: support compiling certain generated files as arm.
 $(gen_cpp_objects): PRIVATE_ARM_MODE := $(normal_objects_mode)
 $(gen_cpp_objects): PRIVATE_ARM_CFLAGS := $(normal_objects_cflags)
+$(gen_cpp_objects): PRIVATE_COMPILER_ID := $(my_compiler)
 $(gen_cpp_objects): $(intermediates)/%.o: \
     $(intermediates)/%$(LOCAL_CPP_EXTENSION) $(yacc_cpps) \
     $(proto_generated_headers) \
@@ -791,8 +803,10 @@ c_normal_objects := $(addprefix $(intermediates)/,$(c_normal_sources:.c=.o))
 
 $(dotdot_arm_objects) $(c_arm_objects): PRIVATE_ARM_MODE := $(arm_objects_mode)
 $(dotdot_arm_objects) $(c_arm_objects): PRIVATE_ARM_CFLAGS := $(arm_objects_cflags)
+$(dotdot_arm_objects) $(c_arm_objects): PRIVATE_COMPILER_ID := $(my_compiler)
 $(dotdot_objects) $(c_normal_objects): PRIVATE_ARM_MODE := $(normal_objects_mode)
 $(dotdot_objects) $(c_normal_objects): PRIVATE_ARM_CFLAGS := $(normal_objects_cflags)
+$(dotdot_objects) $(c_normal_objects): PRIVATE_COMPILER_ID := $(my_compiler)
 
 c_objects        := $(c_arm_objects) $(c_normal_objects)
 
@@ -817,6 +831,7 @@ ifneq ($(strip $(gen_c_objects)),)
 # TODO: support compiling certain generated files as arm.
 $(gen_c_objects): PRIVATE_ARM_MODE := $(normal_objects_mode)
 $(gen_c_objects): PRIVATE_ARM_CFLAGS := $(normal_objects_cflags)
+$(gen_c_objects): PRIVATE_COMPILER_ID := $(my_compiler)
 $(gen_c_objects): $(intermediates)/%.o: $(intermediates)/%.c $(yacc_cpps) $(proto_generated_headers) \
     $(my_additional_dependencies)
 	$(transform-$(PRIVATE_HOST)c-to-o)
