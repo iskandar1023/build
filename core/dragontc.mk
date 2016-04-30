@@ -38,7 +38,7 @@ else
 endif
 
 # Disable modules that don't work with DragonTC. Split up by arch.
-DISABLE_DTC_arm := v8_mksnapshot.arm
+DISABLE_DTC_arm :=
 DISABLE_DTC_arm64 := libm v8_mksnapshot.arm64
 
 # Set DISABLE_DTC based on arch
